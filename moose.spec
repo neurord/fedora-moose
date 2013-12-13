@@ -29,6 +29,8 @@ BuildRequires: gsl-devel
 BuildRequires: hdf5-devel
 BuildRequires: numpy
 
+Requires: numpy
+
 %description
 MOOSE is the base and numerical core for large, detailed simulations
 including Computational Neuroscience and Systems Biology. MOOSE spans
@@ -50,6 +52,10 @@ This package contains %{_summary}.
 
 Requires: %{name}%{?_isa} = %{version}-%{release}
 Requires: numpy
+Requires: PyQt4
+Requires: PyOpenGL
+Requires: python-matplotlib
+Requires: python-matplotlib-qt4
 
 %prep
 %setup -q -n %{name}_%{version}_%{codename}
@@ -69,16 +75,21 @@ make %flags pymoose
 
 %install
 # work around install script trying to mangle $HOME
-mkdir /tmp/Desktop
-%make_install %flags HOME=/tmp
+mkdir -p .home/Desktop
+%make_install %flags HOME=$PWD/.home
 find %{buildroot} -name '*.py[oc]' -delete
 %if %{defined commit}
 sed -r -i 's/[?][?][?]/_/' %{buildroot}%{python_sitelib}/moose/neuroml2/generated_neuromlsub.py
 %endif
-x=$(readlink %{buildroot}/usr/bin/moosegui) && ln -vfs ${x#%{buildroot}} %{buildroot}/usr/bin/moosegui
+x=$(readlink %{buildroot}/usr/bin/moosegui) && \
+    ln -vfs ${x#%{buildroot}} %{buildroot}/usr/bin/moosegui && \
+    chmod +x "$x"
+sed -i 's+/usr/bin/env python+/usr/bin/python+' %{buildroot}/usr/bin/moosegui
+cp moose %{buildroot}%{_bindir}/
 
 %files
 %{_bindir}/moosegui
+%{_bindir}/moose
 %{_datadir}/%{name}/
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/scalable/apps/*
