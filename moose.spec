@@ -6,7 +6,7 @@ Summary: Multiscale Neuroscience and Systems Biology Simulator
 Version: 2.0.0
 %global codename kalakand
 %if %{defined commit}
-Release: %{date}.git%{commit}%{?dist}
+Release: %{date}.git%{commit}.1%{?dist}
 %else
 Release: 1%{?dist}
 %endif
@@ -27,11 +27,7 @@ BuildRequires: rsync
 BuildRequires: python2-devel
 BuildRequires: gsl-devel
 BuildRequires: hdf5-devel
-%if 0%{?fedora} < 21
-BuildRequires: numpy-devel
-%else
 BuildRequires: numpy
-%endif
 
 %description
 MOOSE is the base and numerical core for large, detailed simulations
@@ -51,6 +47,9 @@ written in C++.
 Summary: Python 2 interface for %{name}
 %description -n python-%{name}
 This package contains %{_summary}.
+
+Requires: %{name}%{?_isa} = %{version}-%{release}
+Requires: numpy
 
 %prep
 %setup -q -n %{name}_%{version}_%{codename}
@@ -103,5 +102,8 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
-* Thu Dec 12 2013 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 2.0.0-1
+* Thu Dec 12 2013 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 2.0.0-20131212.gita9a4f5d1dd.1
+- add more Requires
+
+* Thu Dec 12 2013 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 2.0.0-20131212.gita9a4f5d1dd
 - initial package
