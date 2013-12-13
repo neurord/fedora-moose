@@ -6,7 +6,7 @@ Summary: Multiscale Neuroscience and Systems Biology Simulator
 Version: 2.0.0
 %global codename kalakand
 %if %{defined commit}
-Release: %{date}.git%{commit}.1%{?dist}
+Release: %{date}.git%{commit}.2%{?dist}
 %else
 Release: 1%{?dist}
 %endif
@@ -83,7 +83,7 @@ x=$(readlink %{buildroot}/usr/bin/moosegui) && ln -vfs ${x#%{buildroot}} %{build
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/scalable/apps/*
 
-%doc %{_pkgdocdir}/
+%doc %{_docdir}/%{name}
 
 %files -n python-moose
 %{python_sitelib}/%{name}
@@ -102,6 +102,9 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Thu Dec 12 2013 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 2.0.0-20131212.gita9a4f5d1dd.2
+- fix location of docs on old fedoras
+
 * Thu Dec 12 2013 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 2.0.0-20131212.gita9a4f5d1dd.1
 - add more Requires
 
