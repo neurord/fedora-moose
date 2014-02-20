@@ -1,19 +1,19 @@
-%global commit a9a4f5d1dd
-%global date 20131212
+%global commit 0e0c1ae266
+%global date 20140201
 
 Name: moose
 Summary: Multiscale Neuroscience and Systems Biology Simulator 
 Version: 2.0.0
 %global codename kalakand
 %if %{defined commit}
-Release: %{date}.git%{commit}.3%{?dist}
+Release: %{date}.git%{commit}%{?dist}
 %else
 Release: 1%{?dist}
 %endif
 Url: http://sourceforge.net/projects/moose
 
 %if %{defined commit}
-#c=a9a4f5d1dd; git archive --prefix=moose_2.0.0_kalakand/ $c | xz > moose-git$c.tar.xz
+#c=%{commit}; GIT_DIR=../moose/.git git archive --prefix=moose_2.0.0_kalakand/ $c | pxz > moose-git$c.tar.xz
 Source0: moose-git%{commit}.tar.xz
 %else
 #Source0: http://sourceforge.net/projects/moose/files/moose/Moose%202.0.0%20Kalakand/moose_2.0.0_kalakand.src.tar.gz/download
@@ -48,7 +48,7 @@ written in C++.
 %package -n python-%{name}
 Summary: Python 2 interface for %{name}
 %description -n python-%{name}
-This package contains %{_summary}.
+This package contains the %{_summary}.
 
 Requires: %{name}%{?_isa} = %{version}-%{release}
 Requires: numpy
@@ -59,10 +59,10 @@ Requires: python-matplotlib-qt4
 
 %prep
 %setup -q -n %{name}_%{version}_%{codename}
-sed -i 's/if PY3K/ifdef PY3K/' pymoose/moosemodule.cpp
-sed -i 's/update-icon-caches/:/; s/chown/:/; s/chmod/:/; s/chgrp/:/;' Makefile
+sed -i 's/update-icon-caches/:/; s/chown/:/; s/chmod/:/; s/chgrp/:/; s/strip/:/' Makefile
 
-%global flags BUILD=release PYTHON=2 SVN=0 CXX=clang++ %{?_smp_mflags}
+%global flags BUILD=release PYTHON=2 SVN=0 CXX='clang++ -g' LD='ld --build-id' %{?_smp_mflags}
+#         CFLAGS='-Wno-return-type-c-linkage -Wno-nested-anon-types -Wno-unused-variable'
 
 %build
 make %flags libs
@@ -113,6 +113,10 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Mon Feb 17 2014 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 2.0.0-20140217.git2addd211a4
+- Pull from upstream
+- Fix debuginfo generation
+
 * Fri Dec 13 2013 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 2.0.0-20131212.gita9a4f5d1dd.3
 - add build requirements
 - fix installation of /usr/sbin/moose and /usr/bin/moosegui
