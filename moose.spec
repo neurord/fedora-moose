@@ -61,7 +61,8 @@ Requires: python-matplotlib-qt4
 %setup -q -n %{name}_%{version}_%{codename}
 sed -i 's/update-icon-caches/:/; s/chown/:/; s/chmod/:/; s/chgrp/:/; s/strip/:/' Makefile
 
-%global flags BUILD=release PYTHON=2 SVN=0 CXX='clang++ -g' LD='ld --build-id' %{?_smp_mflags}
+%global python_cflags %(pkg-config --cflags python)
+%global flags BUILD=release PYTHON=2 SVN=0 CXX='clang++ -g' LD='ld --build-id' PYTHON_CFLAGS='%{python_cflags}' %{?_smp_mflags}
 #         CFLAGS='-Wno-return-type-c-linkage -Wno-nested-anon-types -Wno-unused-variable'
 
 %build
@@ -83,8 +84,8 @@ sed -r -i 's/[?][?][?]/_/' %{buildroot}%{python_sitelib}/moose/neuroml2/generate
 %endif
 x=$(readlink %{buildroot}/usr/bin/moosegui) && \
     ln -vfs ${x#%{buildroot}} %{buildroot}/usr/bin/moosegui && \
-    chmod +x "$x"
-sed -i 's+/usr/bin/env python+/usr/bin/python+' %{buildroot}/usr/bin/moosegui
+    chmod +x "$x" && \
+    sed -i 's+/usr/bin/env python+/usr/bin/python+' "$x"
 cp moose %{buildroot}%{_bindir}/
 
 %files
