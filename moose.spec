@@ -28,6 +28,8 @@ BuildRequires: python2-devel
 BuildRequires: gsl-devel
 BuildRequires: hdf5-devel
 BuildRequires: numpy
+BuildRequires: readline-devel
+BuildRequires: ncurses-devel
 
 Requires: numpy
 
@@ -62,7 +64,7 @@ Requires: python-matplotlib-qt4
 sed -i 's/update-icon-caches/:/; s/chown/:/; s/chmod/:/; s/chgrp/:/; s/strip/:/' Makefile
 
 %global python_cflags %(pkg-config --cflags python)
-%global flags BUILD=release PYTHON=2 SVN=0 CXX='clang++ -g' LD='ld --build-id' PYTHON_CFLAGS='%{python_cflags}' %{?_smp_mflags}
+%global flags BUILD=release PYTHON=2 SVN=0 CXX='clang++ -g' LD='ld --build-id' PYTHON_CFLAGS='%{python_cflags}' USE_READLINE=1 USE_CURSES=1 %{?_smp_mflags}
 #         CFLAGS='-Wno-return-type-c-linkage -Wno-nested-anon-types -Wno-unused-variable'
 
 %build
