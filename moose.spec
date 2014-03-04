@@ -32,6 +32,7 @@ BuildRequires: readline-devel
 BuildRequires: ncurses-devel
 
 Requires: numpy
+Requires: python-suds
 
 %description
 MOOSE is the base and numerical core for large, detailed simulations
