@@ -6,7 +6,7 @@ Summary: Multiscale Neuroscience and Systems Biology Simulator
 Version: 2.0.0
 %global codename kalakand
 %if %{defined commit}
-Release: %{date}.git%{commit}%{?dist}
+Release: %{date}.git%{commit}.1%{?dist}
 %else
 Release: 1%{?dist}
 %endif
@@ -117,6 +117,9 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Sat Nov 01 2014 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 2.0.0-20140217.git2addd211a4.1
+- Rebuild for libhdf
+
 * Mon Feb 17 2014 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 2.0.0-20140217.git2addd211a4
 - Pull from upstream
 - Fix debuginfo generation
