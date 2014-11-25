@@ -1,24 +1,24 @@
-%global commit 0e0c1ae266
-%global date 20140201
+%global commit 37b0560a2f
+%global date 20141114
 
 Name: moose
 Summary: Multiscale Neuroscience and Systems Biology Simulator 
-Version: 2.0.0
-%global codename kalakand
+Version: 3.0.0
+%global codename kheer_kadam
 %if %{defined commit}
-Release: %{date}.git%{commit}.1%{?dist}
+Release: %{date}.git%{commit}%{?dist}
 %else
 Release: 1%{?dist}
 %endif
-Url: http://sourceforge.net/projects/moose
+Url: http://moose.ncbs.res.in/
 
 %if %{defined commit}
 #c=%{commit}; GIT_DIR=../moose/.git git archive --prefix=moose_2.0.0_kalakand/ $c | pxz > moose-git$c.tar.xz
 Source0: moose-git%{commit}.tar.xz
 %else
-#Source0: http://sourceforge.net/projects/moose/files/moose/Moose%202.0.0%20Kalakand/moose_2.0.0_kalakand.src.tar.gz/download
-Source0: moose_2.0.0_kalakand.src.tar.gz
+Source0: http://moose.ncbs.res.in/downloads/%{codename}_%{version}.tgz
 %endif
+Patch0:  0001-Remove-broken-installation-instructions.patch
 
 License: LGPLv2
 
@@ -33,6 +33,7 @@ BuildRequires: ncurses-devel
 
 Requires: numpy
 Requires: python-suds
+Requires: python-%{name}%{?_isa} = %{version}-%{release}
 
 %description
 MOOSE is the base and numerical core for large, detailed simulations
@@ -53,7 +54,6 @@ Summary: Python 2 interface for %{name}
 %description -n python-%{name}
 This package contains the %{_summary}.
 
-Requires: %{name}%{?_isa} = %{version}-%{release}
 Requires: numpy
 Requires: PyQt4
 Requires: PyOpenGL
@@ -62,6 +62,7 @@ Requires: python-matplotlib-qt4
 
 %prep
 %setup -q -n %{name}_%{version}_%{codename}
+%patch0 -p1
 sed -i 's/update-icon-caches/:/; s/chown/:/; s/chmod/:/; s/chgrp/:/; s/strip/:/' Makefile
 
 %global python_cflags %(pkg-config --cflags python)
@@ -82,21 +83,22 @@ make %flags pymoose
 mkdir -p .home/Desktop
 %make_install %flags HOME=$PWD/.home
 find %{buildroot} -name '*.py[oc]' -delete
-%if %{defined commit}
-sed -r -i 's/[?][?][?]/_/' %{buildroot}%{python_sitelib}/moose/neuroml2/generated_neuromlsub.py
-%endif
 x=$(readlink %{buildroot}/usr/bin/moosegui) && \
     ln -vfs ${x#%{buildroot}} %{buildroot}/usr/bin/moosegui && \
     chmod +x "$x" && \
     sed -i 's+/usr/bin/env python+/usr/bin/python+' "$x"
 cp moose %{buildroot}%{_bindir}/
+rm %{buildroot}%{python_sitelib}/InstallPyMoose.cmake
+rm %{buildroot}%{python_sitelib}/setup.py*
 
 %files
-%{_bindir}/moosegui
 %{_bindir}/moose
+%{_bindir}/moosegui
 %{_datadir}/%{name}/
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/scalable/apps/*
+%{python_sitelib}/moogli
+%{python_sitelib}/libmumbl
 
 %doc %{_docdir}/%{name}
 
@@ -117,6 +119,9 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Tue Nov 25 2014 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 3.0.0-20141114.git37b0560a2f
+- New upstream version
+
 * Sat Nov 01 2014 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 2.0.0-20140217.git2addd211a4.1
 - Rebuild for libhdf
 

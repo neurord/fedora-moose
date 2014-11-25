@@ -1,0 +1,35 @@
+From b1b10ceef823c2c24ca3a6caf106964e5ab8a4c4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 25 Nov 2014 11:14:33 -0500
+Subject: [PATCH] Remove broken installation instructions
+
+---
+ Makefile | 12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index d03b7b2c5b..ff597cc9e1 100644
+--- a/Makefile
++++ b/Makefile
+@@ -501,17 +501,7 @@ install:
+         ## see standards.freedesktop.org for specifications for where to put menu entries and icons
+         ## copy the .desktop files to /usr/share/applications for link to show up in main menu
+ 	mkdir -p $(DESTDIR)$(install_prefix)/share/applications
+-	cp gui/MooseGUI.desktop $(DESTDIR)$(install_prefix)/share/applications/
+-	cp gui/MooseSquidAxon.desktop $(DESTDIR)$(install_prefix)/share/applications/
+-        ## copy the .desktop files to the desktop too to get icons
+-	cp gui/MooseGUI.desktop $$HOME/Desktop/
+-	chmod a+x $$HOME/Desktop/MooseGUI.desktop
+-	chown $(username) $(HOME)/Desktop/MooseGUI.desktop
+-	chgrp $(username) $(HOME)/Desktop/MooseGUI.desktop
+-	cp gui/MooseSquidAxon.desktop $$HOME/Desktop/
+-	chmod a+x $$HOME/Desktop/MooseSquidAxon.desktop
+-	chgrp $(username) $(HOME)/Desktop/MooseSquidAxon.desktop
+-	chown $(username) $(HOME)/Desktop/MooseSquidAxon.desktop
++	install -D scripts/moose.desktop $(DESTDIR)$(install_prefix)/share/applications/moose.desktop
+         ## copy icon to /usr/share/icons/hicolor/<size>/apps (hicolor is the fallback theme)
+ 	mkdir -p $(DESTDIR)$(install_prefix)/share/icons/hicolor/scalable/apps
+ 	cp gui/icons/moose_icon.png $(DESTDIR)$(install_prefix)/share/icons/hicolor/scalable/apps/
+-- 
+1.9.3
+
