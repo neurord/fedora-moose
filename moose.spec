@@ -19,6 +19,7 @@ Source0: moose-git%{commit}.tar.xz
 Source0: http://moose.ncbs.res.in/downloads/%{codename}_%{version}.tgz
 %endif
 Patch0:  0001-Remove-broken-installation-instructions.patch
+Patch1:  0002-Make-moose.desktop-pass-validation.patch
 
 License: LGPLv2
 
@@ -30,6 +31,7 @@ BuildRequires: hdf5-devel
 BuildRequires: numpy
 BuildRequires: readline-devel
 BuildRequires: ncurses-devel
+BuildRequires: desktop-file-utils
 
 Requires: numpy
 Requires: python-suds
@@ -51,23 +53,46 @@ written in C++.
 
 %package -n python-%{name}
 Summary: Python 2 interface for %{name}
-%description -n python-%{name}
-This package contains the %{_summary}.
-
 Requires: numpy
 Requires: PyQt4
 Requires: PyOpenGL
 Requires: python-matplotlib
 Requires: python-matplotlib-qt4
+Requires: python-networkx
+%description -n python-%{name}
+This package contains the %{summary}.
+
+%package doc
+Summary: Documentation and examples for %{name}
+Requires: %{name}%{?_isa} = %{version}-%{release}
+
+BuildArch: noarch
+%description doc
+This package contains the documentation and examples for %{name}.
 
 %prep
 %setup -q -n %{name}_%{version}_%{codename}
 %patch0 -p1
+%patch1 -p1
 sed -i 's/update-icon-caches/:/; s/chown/:/; s/chmod/:/; s/chgrp/:/; s/strip/:/' Makefile
 
 %global python_cflags %(pkg-config --cflags python)
 %global flags BUILD=release PYTHON=2 SVN=0 CXX='clang++ -g' LD='ld --build-id' PYTHON_CFLAGS='%{python_cflags}' USE_READLINE=1 USE_CURSES=1 %{?_smp_mflags}
 #         CFLAGS='-Wno-return-type-c-linkage -Wno-nested-anon-types -Wno-unused-variable'
+
+# remove shebangs and fix permissions
+rm -v python/libmumbl/*.sh
+find python gui Demos -name '*.py' -print0 |xargs -0t sed -i '/\#!\/usr\/bin\/env.*/d'
+find python gui Demos -type f \! -name '*.sh' -exec chmod -x {} \;
+
+rm -rf Demos/hopfield  # broken on import
+%global binaries gui/mgui.py Demos/izhikevich/Izhikevich.py Demos/squid/squid_demo.py Demos/symcomp/symcomp.py Demos/traub_2005/py/gui.py Demos/traub_2005/py/test_*.py Demos/tutorials/*/*.py Demos/neuroml/CA1PyramidalCell/FvsI_CA1.py Demos/neuroml/GranuleCell/FvsI_Granule98.py Demos/neuroml/LIF/FvsI_LIF.py
+sed -i '1 i \#!%{__python2}' %{binaries}
+chmod +x %{binaries}
+
+# Upstream uses windows line ending to make things easy for windows users.
+# This is unlikely to change until they switch to git.
+find Docs -type f \( -name '*.markdown' -o -name '*.txt' \) -print0 |xargs -0t sed -i 's/\r$//'
 
 %build
 make %flags libs
@@ -83,24 +108,34 @@ make %flags pymoose
 mkdir -p .home/Desktop
 %make_install %flags HOME=$PWD/.home
 find %{buildroot} -name '*.py[oc]' -delete
-x=$(readlink %{buildroot}/usr/bin/moosegui) && \
-    ln -vfs ${x#%{buildroot}} %{buildroot}/usr/bin/moosegui && \
-    chmod +x "$x" && \
-    sed -i 's+/usr/bin/env python+/usr/bin/python+' "$x"
+rm %{buildroot}/usr/bin/moosegui
+ln -vfs /usr/share/moose/gui/mgui.py %{buildroot}/usr/bin/moosegui
+
 cp moose %{buildroot}%{_bindir}/
 rm %{buildroot}%{python_sitelib}/InstallPyMoose.cmake
 rm %{buildroot}%{python_sitelib}/setup.py*
+find %{buildroot}%{python_sitelib} -name '*.[ch]pp' -delete
+find %{buildroot}%{python_sitelib} -type d -empty -delete
+rm -r %{buildroot}%{_pkgdocdir}/{markdown,config,user/py,user/build,user/markdown}
+
+%check
+desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 %files
 %{_bindir}/moose
 %{_bindir}/moosegui
-%{_datadir}/%{name}/
+%dir %{_datadir}/%{name}/
+%{_datadir}/%{name}/gui
 %{_datadir}/applications/*.desktop
-%{_datadir}/icons/hicolor/scalable/apps/*
+%{_datadir}/icons/hicolor
 %{python_sitelib}/moogli
 %{python_sitelib}/libmumbl
 
-%doc %{_docdir}/%{name}
+%license copyleft
+
+%files doc
+%doc %{_pkgdocdir}
+%{_datadir}/%{name}/Demos
 
 %files -n python-moose
 %{python_sitelib}/%{name}

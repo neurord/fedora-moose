@@ -1,0 +1,32 @@
+From 7e408eac017030cd08a231c4c12373e1550ece13 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Mon, 8 Dec 2014 14:53:25 -0500
+Subject: [PATCH] Make moose.desktop pass validation
+
+moose.desktop: error: value "3.0.0" for key "Version" in group "Desktop Entry" is not a known version
+moose.desktop: hint: value "Education;Biology;Science;Neuroscience;" for key "Categories" in group "Desktop Entry" contains more than one main category; application might appear more than once in the application menu
+moose.desktop: error: value "Education;Biology;Science;Neuroscience;" for key "Categories" in group "Desktop Entry" contains an unregistered value "Neuroscience"; values extending the format should start with "X-"
+
+Version is the version of the standard, not of the application.
+Remove extra categories, Science/Biology is enough and is listed in
+http://standards.freedesktop.org/menu-spec/latest/apa.html.
+---
+ scripts/moose.desktop | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/moose.desktop b/scripts/moose.desktop
+index dc96e8f7f5..d3dc74f9cd 100644
+--- a/scripts/moose.desktop
++++ b/scripts/moose.desktop
+@@ -2,6 +2,6 @@
+ Name=MOOSE
+ Exec=moosegui
+ Type=Application
+-Version=3.0.0
++Version=1.0
+ Icon=/usr/share/moose/moose_icon.png
+-Categories=Education;Biology;Science;Neuroscience;
++Categories=Science;Biology;
+-- 
+1.9.3
+
