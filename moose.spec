@@ -6,7 +6,7 @@ Summary: Multiscale Neuroscience and Systems Biology Simulator
 Version: 3.0.0
 %global codename kheer_kadam
 %if %{defined commit}
-Release: %{date}.git%{commit}%{?dist}
+Release: %{date}.git%{commit}.1%{?dist}
 %else
 Release: 1%{?dist}
 %endif
@@ -31,6 +31,7 @@ BuildRequires: hdf5-devel
 BuildRequires: numpy
 BuildRequires: readline-devel
 BuildRequires: ncurses-devel
+BuildRequires: libsbml-devel
 BuildRequires: desktop-file-utils
 
 Requires: numpy
@@ -77,7 +78,7 @@ This package contains the documentation and examples for %{name}.
 sed -i 's/update-icon-caches/:/; s/chown/:/; s/chmod/:/; s/chgrp/:/; s/strip/:/' Makefile
 
 %global python_cflags %(pkg-config --cflags python)
-%global flags BUILD=release PYTHON=2 SVN=0 CXX='clang++ -g' LD='ld --build-id' PYTHON_CFLAGS='%{python_cflags}' USE_READLINE=1 USE_CURSES=1 %{?_smp_mflags}
+%global flags BUILD=release PYTHON=2 SVN=0 CXX='clang++ -g' LD='ld --build-id' PYTHON_CFLAGS='%{python_cflags}' USE_READLINE=1 USE_CURSES=1 USE_SBML=1 %{?_smp_mflags}
 #         CFLAGS='-Wno-return-type-c-linkage -Wno-nested-anon-types -Wno-unused-variable'
 
 # remove shebangs and fix permissions
@@ -96,11 +97,7 @@ find Docs -type f \( -name '*.markdown' -o -name '*.txt' \) -print0 |xargs -0t s
 
 %build
 make %flags libs
-%if %{defined commit}
 make %flags moose
-%else
-make %flags OBJLIBS='$(wildcard */[a-zA-Z]*.o)' moose
-%endif
 make %flags pymoose
 
 %install
@@ -154,6 +151,9 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Mon Jan 26 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 3.0.0-20141114.git37b0560a2f.1
+- Build with sbml
+
 * Tue Nov 25 2014 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 3.0.0-20141114.git37b0560a2f
 - New upstream version
 
