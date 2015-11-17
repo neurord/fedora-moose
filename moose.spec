@@ -6,7 +6,7 @@ Summary: Multiscale Neuroscience and Systems Biology Simulator
 Version: 3.0.0
 %global codename kheer_kadam
 %if %{defined commit}
-Release: %{date}.git%{commit}.1%{?dist}
+Release: %{date}.git%{commit}.2%{?dist}
 %else
 Release: 1%{?dist}
 %endif
@@ -151,6 +151,9 @@ fi
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 %changelog
+* Tue Nov 17 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 3.0.0-20141114.git37b0560a2f.2
+- Rebuild for F23
+
 * Mon Jan 26 2015 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 3.0.0-20141114.git37b0560a2f.1
 - Build with sbml
 
